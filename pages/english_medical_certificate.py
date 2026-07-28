@@ -66,9 +66,16 @@ DISCLAIMER_TEXT = (
 
 @st.cache_data
 def load_mapping_table() -> pd.DataFrame:
-    if os.path.exists(MAPPING_CSV_PATH):
+    empty_df = pd.DataFrame(columns=["kcd_code", "icd10_code", "korean_name", "english_name"])
+    if not os.path.exists(MAPPING_CSV_PATH):
+        return empty_df
+    try:
         return pd.read_csv(MAPPING_CSV_PATH, dtype=str).fillna("")
-    return pd.DataFrame(columns=["kcd_code", "icd10_code", "korean_name", "english_name"])
+    except Exception as e:
+        # CSV 파일에 문제가 있어도 앱 전체가 죽지 않고,
+        # 병명 매핑 없이(AI 번역만으로) 계속 동작하도록 함
+        st.warning(f"⚠️ 병명 매핑 테이블(diagnosis_mapping.csv)을 읽는 중 오류가 발생하여 매핑 없이 진행합니다: {e}")
+        return empty_df
 
 
 def lookup_english_diagnosis(korean_name: str, mapping_df: pd.DataFrame) -> str:
