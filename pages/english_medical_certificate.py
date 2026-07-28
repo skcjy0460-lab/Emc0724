@@ -168,29 +168,41 @@ PRESCRIPTION_EXTRACTION_PROMPT = """
 절대 포함하지 마세요.
 
 {
-  "hospital_name": "발급 병원/의원명",
+  "insurance_type_korean": "체크된 보험 종류 (의료보험/의료보호/산재보험/자동차보험/기타 중 표시된 것 원문 그대로, 없으면 빈값)",
+  "institution_code": "요양기관기호",
+  "hospital_name": "발급 병원/의원명 (의료기관명칭)",
+  "hospital_phone": "병원 전화번호",
+  "hospital_fax": "병원 팩스번호 (있는 경우)",
+  "hospital_email": "병원 e-mail 주소 (있는 경우)",
+  "hospital_address": "병원 주소 (있는 경우, 서식에 없으면 빈값)",
   "patient_name_kor": "환자 성명 (한글)",
   "patient_name_eng": "환자 성명 로마자 표기 시도 (없으면 빈값)",
-  "patient_birth_date": "생년월일 (YYYY-MM-DD)",
+  "patient_birth_date": "환자 주민등록번호 앞 6자리를 생년월일로 환산 (YYYY-MM-DD), 주민등록번호가 전체 노출되어 있어도 생년월일만 추출하고 나머지 번호는 절대 포함하지 마세요",
   "patient_gender": "성별 (M/F, 확인 불가시 빈값)",
-  "prescription_date": "처방일 (YYYY-MM-DD)",
-  "issue_date": "처방전 발급일/유효기간 관련 날짜 (YYYY-MM-DD, 있는 경우)",
-  "doctor_name": "처방 의사 성명",
-  "doctor_license_no": "의사 면허번호",
-  "hospital_phone": "병원 전화번호 (있는 경우)",
-  "hospital_address": "병원 주소 (있는 경우)",
+  "diagnosis_classification_code": "질병분류기호 (있는 경우만, 환자 요청으로 미기재시 빈값)",
+  "doctor_name": "처방의료인의 성명",
+  "license_type": "면허종별 (예: 의사/치과의사/한의사)",
+  "doctor_license_no": "면허번호",
+  "prescription_date": "교부일자 (YYYY-MM-DD)",
+  "issue_date": "교부일자와 동일하면 같은 값 (YYYY-MM-DD)",
+  "validity_days": "사용기간 - 교부일로부터 며칠간인지 숫자만 (기재 없으면 빈값)",
+  "injection_details_korean": "주사제 처방내역 원문 (있는 경우, 원내처방/원외처방 여부 포함)",
+  "dispensing_notes_korean": "조제시 참고사항 원문 (있는 경우)",
   "medications": [
     {
-      "drug_name_korean": "처방전에 기재된 약품명 원문 (한글/영문 상품명 그대로)",
-      "dosage_per_administration": "1회 투여량 (예: 1정, 2캡슐 등 원문 그대로)",
-      "frequency_per_day": "1일 투여 횟수 (예: 1일 3회, 원문 그대로)",
-      "duration_days": "총 투여일수 (숫자만, 예: 7)",
-      "instructions_korean": "복용법/특이사항 원문 (예: 식후 30분, 필요시 복용 등)"
+      "drug_name_korean": "처방 의약품의 명칭 원문 (한글/영문 상품명 그대로)",
+      "dosage_per_administration": "1회 투약량 (원문 그대로, 예: 1정)",
+      "frequency_per_day": "1일 투여횟수 (원문 그대로, 예: 3회)",
+      "duration_days": "총 투약일수 (숫자만, 예: 7)",
+      "substitution_allowed_korean": "대체가능 여부 원문 (예: 가능/불가, 표시 없으면 빈값)",
+      "usage_timing_korean": "용법 - 식전/식후/취침전 등 복용 시점 원문",
+      "instructions_korean": "분복용 등 기타 복용 특이사항 원문"
     }
   ]
 }
 
 medications는 처방전에 기재된 약품 개수만큼 배열로 모두 포함하세요. 하나도 못 찾으면 빈 배열로 두세요.
+patient_birth_date를 만들 때 주민등록번호 뒷자리(성별/개인식별 정보)는 절대 결과에 포함하지 마세요.
 """
 
 
@@ -269,7 +281,9 @@ def call_gemini_translate_medications(medications: list, api_key: str) -> list:
         '    "drug_name_english": "영문 성분명 (상품명)",\n'
         '    "dosage_frequency_english": "예: 1 tablet, 3 times a day",\n'
         '    "duration_english": "예: 7 days",\n'
-        '    "instructions_english": "예: Take after meals"\n'
+        '    "substitution_allowed_english": "예: Allowed / Not Allowed (원문에 표시 없으면 빈 문자열)",\n'
+        '    "usage_timing_english": "예: After meals / Before meals / Before bedtime (빈 문자열 가능)",\n'
+        '    "instructions_english": "예: Take as needed for pain"\n'
         "  }\n"
         "]"
     )
@@ -290,6 +304,8 @@ def call_gemini_translate_medications(medications: list, api_key: str) -> list:
                 "drug_name_english": "",
                 "dosage_frequency_english": "",
                 "duration_english": "",
+                "substitution_allowed_english": "",
+                "usage_timing_english": "",
                 "instructions_english": "",
             }
             for _ in medications
@@ -464,61 +480,239 @@ def generate_certificate_html(data: dict, purpose: str) -> str:
     return html
 
 
+PRESCRIPTION_FORM_CSS = """
+<style>
+    @page { size: A4; margin: 1.3cm; }
+    body { font-family: 'NanumGothic'; font-size: 9pt; color: #0d1b4c; }
+    .form-wrapper { border: 2.5px solid #0d1b4c; }
+    .form-title {
+        text-align: center;
+        font-family: 'NanumGothic-Bold';
+        font-size: 22pt;
+        letter-spacing: 14px;
+        padding: 10px 0 2px 0;
+    }
+    .form-subtitle {
+        text-align: center;
+        font-size: 8pt;
+        color: #555555;
+        margin-bottom: 6px;
+    }
+    table.form-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+    table.form-table td, table.form-table th {
+        border: 1px solid #0d1b4c;
+        padding: 4px 6px;
+        font-size: 8.5pt;
+        vertical-align: middle;
+    }
+    td.f-label {
+        font-family: 'NanumGothic-Bold';
+        background-color: #eef1fa;
+        text-align: center;
+    }
+    .section-title-bar {
+        background-color: #0d1b4c;
+        color: #ffffff;
+        font-family: 'NanumGothic-Bold';
+        padding: 4px 8px;
+        font-size: 9.5pt;
+    }
+    .note-text {
+        font-size: 7.5pt;
+        color: #555555;
+        padding: 3px 8px;
+    }
+    .med-table th {
+        background-color: #eef1fa;
+        font-family: 'NanumGothic-Bold';
+        font-size: 7.8pt;
+        text-align: center;
+        border: 1px solid #0d1b4c;
+        padding: 4px 3px;
+    }
+    .med-table td {
+        font-size: 7.8pt;
+        text-align: center;
+        border: 1px solid #0d1b4c;
+        padding: 4px 3px;
+    }
+    .med-table td.left { text-align: left; }
+    .footer-note {
+        font-size: 8pt;
+        padding: 8px;
+    }
+    .blank-cell { height: 20px; }
+    .notice-heading {
+        font-family: 'NanumGothic-Bold';
+        font-size: 9pt;
+        margin-top: 14px;
+    }
+    .notice-body {
+        font-size: 8pt;
+        font-style: italic;
+        color: #444444;
+    }
+</style>
+"""
+
+
+def _insurance_line(insurance_type_korean: str) -> str:
+    categories = [
+        ("의료보험", "① Medical Insurance"),
+        ("의료보호", "② Medical Aid"),
+        ("산재보험", "③ Industrial Accident Insurance"),
+        ("자동차보험", "④ Auto Insurance"),
+        ("기타", "⑤ Other"),
+    ]
+    parts = []
+    matched_any = False
+    for kor, eng in categories:
+        if insurance_type_korean and kor in insurance_type_korean:
+            parts.append(f"<b>[{eng}]</b>")
+            matched_any = True
+        else:
+            parts.append(eng)
+    line = " &nbsp; ".join(parts)
+    if not matched_any and insurance_type_korean:
+        line += f" &nbsp; (原文/Original: {insurance_type_korean})"
+    return line
+
+
 def generate_prescription_html(data: dict) -> str:
     med_rows = ""
     for med in data.get("medications", []):
         med_rows += f"""
         <tr>
-            <td>{med.get('drug_name_english', '') or '-'}</td>
-            <td>{med.get('drug_name_korean', '') or '-'}</td>
+            <td class="left">{med.get('drug_name_english', '') or '-'}</td>
+            <td class="left">{med.get('drug_name_korean', '') or '-'}</td>
             <td>{med.get('dosage_frequency_english', '') or '-'}</td>
             <td>{med.get('duration_english', '') or '-'}</td>
-            <td>{med.get('instructions_english', '') or '-'}</td>
+            <td>{med.get('substitution_allowed_english', '') or '-'}</td>
+            <td>{med.get('usage_timing_english', '') or '-'}</td>
+            <td class="left">{med.get('instructions_english', '') or '-'}</td>
         </tr>
         """
-
     if not med_rows:
-        med_rows = '<tr><td colspan="5">No medication information extracted.</td></tr>'
+        med_rows = '<tr><td colspan="7">No medication information extracted.</td></tr>'
+
+    insurance_line = _insurance_line(data.get("insurance_type_korean", ""))
+    validity = data.get("validity_days", "")
+    validity_text = (
+        f"Valid for {validity} day(s) from the date of issue."
+        if validity
+        else "Valid for ___ day(s) from the date of issue."
+    )
 
     html = f"""
-    <html><head>{BASE_CSS}</head><body>
-        <h1>PRESCRIPTION</h1>
-        <p class="hospital-name">{data.get('hospital_name', '')}</p>
-        <p class="hospital-sub">{data.get('hospital_address', '')} &nbsp; {data.get('hospital_phone', '')}</p>
+    <html><head>{PRESCRIPTION_FORM_CSS}</head><body>
+    <div class="form-wrapper">
+        <div class="form-title">PRESCRIPTION</div>
+        <div class="form-subtitle">처방전 (Republic of Korea Standard Prescription Form)</div>
 
-        <table class="info-table">
-            {_row("Patient Name", data.get("patient_name_eng") or data.get("patient_name_kor", ""))}
-            {_row("Date of Birth", data.get("patient_birth_date", ""))}
-            {_row("Gender", data.get("patient_gender", ""))}
-            {_row("Prescription Date", data.get("prescription_date", ""))}
-            {_row("Date of Issue", data.get("issue_date", ""))}
+        <table class="form-table">
+            <tr>
+                <td colspan="3">{insurance_line}</td>
+                <td class="f-label" style="width:16%;">Institution Code</td>
+                <td style="width:20%;">{data.get('institution_code', '') or '-'}</td>
+            </tr>
         </table>
 
-        <div class="section-heading">Medications</div>
-        <table class="med-table">
+        <table class="form-table">
             <tr>
-                <th>Drug (Generic / Brand)</th>
-                <th>Original Name (Korean)</th>
-                <th>Dosage &amp; Frequency</th>
-                <th>Duration</th>
-                <th>Instructions</th>
+                <td class="f-label" style="width:18%;">Patient Name</td>
+                <td style="width:32%;">{data.get('patient_name_eng') or data.get('patient_name_kor', '') or '-'}</td>
+                <td class="f-label" style="width:18%;">Date of Birth</td>
+                <td style="width:32%;">{data.get('patient_birth_date', '') or '-'}</td>
+            </tr>
+            <tr>
+                <td class="f-label">Medical Institution</td>
+                <td>{data.get('hospital_name', '') or '-'}</td>
+                <td class="f-label">Phone</td>
+                <td>{data.get('hospital_phone', '') or '-'}</td>
+            </tr>
+            <tr>
+                <td class="f-label">Fax</td>
+                <td>{data.get('hospital_fax', '') or '-'}</td>
+                <td class="f-label">E-mail</td>
+                <td>{data.get('hospital_email', '') or '-'}</td>
+            </tr>
+        </table>
+
+        <table class="form-table">
+            <tr>
+                <td class="f-label" style="width:20%;">Diagnosis Code</td>
+                <td style="width:20%;">{data.get('diagnosis_classification_code', '') or '-'}</td>
+                <td class="f-label" style="width:22%;">Prescribing Physician<br/>(Signature/Seal)</td>
+                <td style="width:20%;">{data.get('doctor_name', '')}<br/>______________</td>
+                <td class="f-label" style="width:9%;">License Type</td>
+                <td style="width:9%;">{data.get('license_type', '') or '-'}</td>
+            </tr>
+            <tr>
+                <td class="f-label">License No.</td>
+                <td colspan="5">{data.get('doctor_license_no', '') or '-'}</td>
+            </tr>
+        </table>
+        <div class="note-text">* Diagnosis code is omitted if requested by the patient. (환자의 요구가 있을 때에는 질병분류기호를 기재하지 아니합니다.)</div>
+
+        <div class="section-title-bar">Prescribed Medications (처방 의약품)</div>
+        <table class="form-table med-table">
+            <tr>
+                <th style="width:20%;">Drug Name<br/>(Generic / Brand)</th>
+                <th style="width:14%;">Original Name<br/>(Korean)</th>
+                <th style="width:12%;">Dose &amp;<br/>Frequency</th>
+                <th style="width:9%;">Total<br/>Days</th>
+                <th style="width:11%;">Substitution<br/>Allowed</th>
+                <th style="width:11%;">Usage<br/>Timing</th>
+                <th style="width:23%;">Notes</th>
             </tr>
             {med_rows}
         </table>
 
-        <table class="sign-table">
+        <table class="form-table">
             <tr>
-                <td>Prescribing Physician: {data.get('doctor_name', '')}</td>
-                <td>Signature: ______________________</td>
-            </tr>
-            <tr>
-                <td>License No.: {data.get('doctor_license_no', '')}</td>
-                <td>Hospital/Pharmacy Stamp:</td>
+                <td class="f-label" style="width:18%;">Injectable<br/>Medication</td>
+                <td style="width:32%;">{data.get('injection_details_korean', '') or '-'}</td>
+                <td class="f-label" style="width:18%;">Notes for<br/>Dispensing</td>
+                <td style="width:32%;">{data.get('dispensing_notes_korean', '') or '-'}</td>
             </tr>
         </table>
 
-        <div class="notice-heading">Notice</div>
-        <p class="notice-body">{DISCLAIMER_TEXT}</p>
+        <table class="form-table">
+            <tr>
+                <td class="f-label" style="width:20%;">Validity Period</td>
+                <td>{validity_text} &nbsp;
+                    <span style="font-size:7.5pt; color:#555;">*Must be submitted to the pharmacy within the validity period.</span>
+                </td>
+            </tr>
+        </table>
+
+        <div class="section-title-bar">Medication Dispensing Record (의약품 조제내역) — For Pharmacy Use</div>
+        <table class="form-table">
+            <tr>
+                <td class="f-label" style="width:20%;">Dispensing Institution</td>
+                <td style="width:30%;" class="blank-cell"></td>
+                <td class="f-label" style="width:20%;" rowspan="3">Changes / Substitutions<br/>to Prescription</td>
+                <td style="width:30%;" rowspan="3" class="blank-cell"></td>
+            </tr>
+            <tr>
+                <td class="f-label">Pharmacist Name<br/>(Signature/Seal)</td>
+                <td class="blank-cell"></td>
+            </tr>
+            <tr>
+                <td class="f-label">Quantity Dispensed /<br/>Dispensing Date</td>
+                <td class="blank-cell"></td>
+            </tr>
+        </table>
+
+        <div class="footer-note">
+            <div class="notice-heading">Notice</div>
+            <p class="notice-body">{DISCLAIMER_TEXT}</p>
+        </div>
+    </div>
     </body></html>
     """
     return html
@@ -604,6 +798,8 @@ def main():
                             med["drug_name_english"] = t.get("drug_name_english", "")
                             med["dosage_frequency_english"] = t.get("dosage_frequency_english", "")
                             med["duration_english"] = t.get("duration_english", "")
+                            med["substitution_allowed_english"] = t.get("substitution_allowed_english", "")
+                            med["usage_timing_english"] = t.get("usage_timing_english", "")
                             med["instructions_english"] = t.get("instructions_english", "")
                         extracted["medications"] = meds
 
@@ -662,25 +858,57 @@ def main():
                 })
 
         else:  # prescription
+            st.markdown("**의료기관 정보**")
             col1, col2 = st.columns(2)
             with col1:
-                data["hospital_name"] = st.text_input("병원명", data.get("hospital_name", ""))
+                data["hospital_name"] = st.text_input("의료기관 명칭", data.get("hospital_name", ""))
+                data["institution_code"] = st.text_input("요양기관기호", data.get("institution_code", ""))
+                data["hospital_phone"] = st.text_input("전화번호", data.get("hospital_phone", ""))
+            with col2:
+                data["hospital_fax"] = st.text_input("팩스번호 (선택)", data.get("hospital_fax", ""))
+                data["hospital_email"] = st.text_input("e-mail (선택)", data.get("hospital_email", ""))
+                data["insurance_type_korean"] = st.text_input(
+                    "보험 종류 (의료보험/의료보호/산재보험/자동차보험/기타)", data.get("insurance_type_korean", "")
+                )
+
+            st.markdown("**환자 정보**")
+            col3, col4 = st.columns(2)
+            with col3:
                 data["patient_name_eng"] = st.text_input(
                     "환자 성명 영문",
                     data.get("patient_name_eng") or data.get("patient_name_kor", ""),
                 )
                 data["patient_birth_date"] = st.text_input("생년월일 (YYYY-MM-DD)", data.get("patient_birth_date", ""))
+            with col4:
                 data["patient_gender"] = st.selectbox(
                     "성별", ["", "M", "F"],
                     index=["", "M", "F"].index(data.get("patient_gender", "")) if data.get("patient_gender") in ["", "M", "F"] else 0,
                 )
-            with col2:
-                data["prescription_date"] = st.text_input("처방일 (YYYY-MM-DD)", data.get("prescription_date", ""))
+                data["diagnosis_classification_code"] = st.text_input(
+                    "질병분류기호 (선택, 환자 요청시 미기재 가능)", data.get("diagnosis_classification_code", "")
+                )
+
+            st.markdown("**처방의료인 정보**")
+            col5, col6 = st.columns(2)
+            with col5:
+                data["doctor_name"] = st.text_input("처방의료인 성명", data.get("doctor_name", ""))
+                data["license_type"] = st.text_input("면허종별 (의사/치과의사/한의사)", data.get("license_type", ""))
+            with col6:
+                data["doctor_license_no"] = st.text_input("면허번호", data.get("doctor_license_no", ""))
+                data["validity_days"] = st.text_input("사용기간 (교부일로부터 며칠, 숫자만)", data.get("validity_days", ""))
+
+            col7, col8 = st.columns(2)
+            with col7:
+                data["prescription_date"] = st.text_input("교부일자 (YYYY-MM-DD)", data.get("prescription_date", ""))
+            with col8:
                 data["issue_date"] = st.text_input("발급일 (YYYY-MM-DD)", data.get("issue_date", str(date.today())))
-                data["doctor_name"] = st.text_input("처방 의사 성명", data.get("doctor_name", ""))
-                data["doctor_license_no"] = st.text_input("의사 면허번호", data.get("doctor_license_no", ""))
-                data["hospital_address"] = st.text_input("병원 주소 (선택)", data.get("hospital_address", ""))
-                data["hospital_phone"] = st.text_input("병원 전화번호 (선택)", data.get("hospital_phone", ""))
+
+            data["injection_details_korean"] = st.text_input(
+                "주사제 처방내역 (있는 경우)", data.get("injection_details_korean", "")
+            )
+            data["dispensing_notes_korean"] = st.text_input(
+                "조제시 참고사항 (있는 경우)", data.get("dispensing_notes_korean", "")
+            )
 
             st.markdown("**약품 목록 (확인 및 수정 필요 — 특히 성분명 영문 표기)**")
             st.caption("⚠️ 약품 영문명은 AI 번역 결과입니다. 반드시 의사/약사가 정확한 성분명(INN)인지 확인해주세요.")
@@ -696,7 +924,12 @@ def main():
                     with c2:
                         med["duration_english"] = st.text_input("투약 기간 (영문)", med.get("duration_english", ""), key=f"med_dur_{i}")
                     with c3:
-                        med["instructions_english"] = st.text_input("복용 지침 (영문)", med.get("instructions_english", ""), key=f"med_inst_{i}")
+                        med["usage_timing_english"] = st.text_input("복용 시점 (영문, 식전/식후 등)", med.get("usage_timing_english", ""), key=f"med_timing_{i}")
+                    c4, c5 = st.columns(2)
+                    with c4:
+                        med["substitution_allowed_english"] = st.text_input("대체조제 가능여부 (영문)", med.get("substitution_allowed_english", ""), key=f"med_sub_{i}")
+                    with c5:
+                        med["instructions_english"] = st.text_input("기타 복용 지침 (영문)", med.get("instructions_english", ""), key=f"med_inst_{i}")
             data["medications"] = meds
 
         st.session_state.extracted = data
