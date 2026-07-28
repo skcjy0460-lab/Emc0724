@@ -1,4 +1,5 @@
 streamlit
 google-genai
-python-docx
 pandas
+xhtml2pdf
+reportlab
