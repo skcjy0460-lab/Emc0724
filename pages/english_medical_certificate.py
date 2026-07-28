@@ -132,13 +132,12 @@ def call_gemini_vision_extract(image_bytes: bytes, mime_type: str, api_key: str)
     client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-3.6-flash",
         contents=[
             types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
             EXTRACTION_PROMPT,
         ],
         config=types.GenerateContentConfig(
-            temperature=0,
             response_mime_type="application/json",
         ),
     )
@@ -164,7 +163,7 @@ def call_gemini_translate_diagnosis(korean_diagnosis: str, api_key: str) -> str:
         "다른 설명 없이 영문 병명만 출력하세요.\n\n"
         f"병명: {korean_diagnosis}"
     )
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
+    response = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
     return response.text.strip()
 
 
@@ -180,7 +179,7 @@ def call_gemini_translate_free_text(korean_text: str, api_key: str) -> str:
         "하지 마세요.\n\n"
         f"{korean_text}"
     )
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
+    response = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
     return response.text.strip()
 
 
