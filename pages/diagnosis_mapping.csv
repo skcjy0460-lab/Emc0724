@@ -1,0 +1,126 @@
+kcd_code,icd10_code,korean_name,english_name
+S72.0,S72.0,대퇴골 경부의 골절,Fracture of neck of femur
+S82.0,S82.0,슬개골의 골절,Fracture of patella
+S42.0,S42.0,쇄골의 골절,Fracture of clavicle
+S52.5,S52.5,요골 하단의 골절,Fracture of lower end of radius
+S82.6,S82.6,외과관절(발목)의 골절,Fracture of lateral malleolus
+S93.4,S93.4,발목의 염좌 및 긴장,Sprain and strain of ankle
+S93.3,S93.3,발의 탈구,Dislocation of foot
+S83.5,S83.5,무릎 전방십자인대의 손상,Sprain involving anterior cruciate ligament of knee
+S46.0,S46.0,어깨 회전근개의 손상,Injury of muscle and tendon of the rotator cuff
+M75.1,M75.1,회전근개 증후군,Rotator cuff syndrome
+M54.5,M54.5,요통,Low back pain
+M54.2,M54.2,경부통,Cervicalgia (neck pain)
+M51.2,M51.2,기타 명시된 추간판 변위,Other specified intervertebral disc displacement
+M17,M17,무릎관절증(골관절염),Gonarthrosis (knee osteoarthritis)
+M16,M16,고관절증(골관절염),Coxarthrosis (hip osteoarthritis)
+M25.5,M25.5,관절통,Pain in joint (arthralgia)
+M79.1,M79.1,근육통,Myalgia
+M65.4,M65.4,드퀘르뱅 건초염,De Quervain's tenosynovitis
+M77.1,M77.1,외측상과염(테니스 엘보),Lateral epicondylitis (tennis elbow)
+G56.0,G56.0,수근관 증후군,Carpal tunnel syndrome
+S06.0,S06.0,뇌진탕,Concussion
+S00.9,S00.9,머리의 상세불명 표재성 손상,Unspecified superficial injury of head
+T14.1,T14.1,상세불명 부위의 개방성 상처,Open wound of unspecified body region
+T14.0,T14.0,상세불명 부위의 표재성 손상,Superficial injury of unspecified body region
+T20-T25,T20-T25,화상,Burn
+I21,I21,급성 심근경색증,Acute myocardial infarction
+I20.0,I20.0,불안정 협심증,Unstable angina
+I20.9,I20.9,상세불명의 협심증,"Angina pectoris, unspecified"
+I10,I10,본태성(원발성) 고혈압,Essential (primary) hypertension
+I48,I48,심방세동 및 조동,Atrial fibrillation and flutter
+I50.9,I50.9,상세불명의 심부전,"Heart failure, unspecified"
+I63,I63,뇌경색증,Cerebral infarction (ischemic stroke)
+I61,I61,뇌내출혈,Intracerebral hemorrhage
+I80,I80,정맥염 및 혈전정맥염,Phlebitis and thrombophlebitis
+I83.9,I83.9,합병증이 없는 하지의 정맥류,Varicose veins of lower extremities without complications
+E11,E11,2형 당뇨병,Type 2 diabetes mellitus
+E10,E10,1형 당뇨병,Type 1 diabetes mellitus
+E78.5,E78.5,상세불명의 고지질혈증,"Hyperlipidemia, unspecified"
+E03.9,E03.9,상세불명의 갑상선기능저하증,"Hypothyroidism, unspecified"
+E05.9,E05.9,상세불명의 갑상선기능항진증,"Thyrotoxicosis, unspecified"
+E66.9,E66.9,상세불명의 비만,"Obesity, unspecified"
+E86,E86,체액량 감소(탈수),Volume depletion (dehydration)
+J18.9,J18.9,상세불명의 폐렴,"Pneumonia, unspecified"
+J45,J45,천식,Asthma
+J44.9,J44.9,상세불명의 만성폐쇄성폐질환,"Chronic obstructive pulmonary disease, unspecified"
+J06.9,J06.9,상세불명의 급성 상기도 감염,"Acute upper respiratory infection, unspecified"
+J20.9,J20.9,상세불명의 급성 기관지염,"Acute bronchitis, unspecified"
+J01.9,J01.9,상세불명의 급성 부비동염,"Acute sinusitis, unspecified"
+J02.9,J02.9,상세불명의 급성 인두염,"Acute pharyngitis, unspecified"
+J03.9,J03.9,상세불명의 급성 편도염,"Acute tonsillitis, unspecified"
+J30.4,J30.4,상세불명의 알레르기 비염,"Allergic rhinitis, unspecified"
+J93.9,J93.9,상세불명의 기흉,"Pneumothorax, unspecified"
+K35.8,K35.8,급성 충수염,Acute appendicitis
+K80.2,K80.2,증상이 없는 담낭결석증,Calculus of gallbladder without cholecystitis
+K29.7,K29.7,상세불명의 위염,"Gastritis, unspecified"
+K21.0,K21.0,식도염을 동반한 위식도역류병,Gastro-esophageal reflux disease with esophagitis
+K27.9,K27.9,상세불명의 소화성 궤양,"Peptic ulcer, unspecified"
+K52.9,K52.9,상세불명의 비감염성 위장염 및 결장염,"Noninfective gastroenteritis and colitis, unspecified"
+A09,A09,감염성 및 상세불명 기원의 위장염 및 결장염,"Infectious gastroenteritis and colitis, unspecified"
+K59.0,K59.0,변비,Constipation
+K57.9,K57.9,합병증을 동반하지 않은 게실병,Diverticular disease of intestine without complications
+K74.6,K74.6,기타 및 상세불명의 간경변증,Other and unspecified cirrhosis of liver
+K76.0,K76.0,지방간,Fatty liver (hepatic steatosis)
+K85.9,K85.9,상세불명의 급성 췌장염,"Acute pancreatitis, unspecified"
+R10.4,R10.4,기타 및 상세불명의 복통,Other and unspecified abdominal pain
+N23,N23,상세불명의 신산통,Unspecified renal colic
+N20.0,N20.0,신결석,Calculus of kidney
+N30.9,N30.9,상세불명의 방광염,"Cystitis, unspecified"
+N39.0,N39.0,부위가 명시되지 않은 요로감염,"Urinary tract infection, site not specified"
+N18.9,N18.9,상세불명의 만성 신장병,"Chronic kidney disease, unspecified"
+N40,N40,전립선의 증식,Hyperplasia of prostate (BPH)
+G43,G43,편두통,Migraine
+G44.2,G44.2,긴장형 두통,Tension-type headache
+G40.9,G40.9,상세불명의 뇌전증,"Epilepsy, unspecified"
+G47.0,G47.0,입면 및 수면유지 장애(불면증),Insomnia
+G62.9,G62.9,상세불명의 다발신경병증,"Polyneuropathy, unspecified"
+R42,R42,현기증 및 어지러움,Dizziness and giddiness
+L03.9,L03.9,상세불명의 봉와직염,"Cellulitis, unspecified"
+L20.9,L20.9,상세불명의 아토피피부염,"Atopic dermatitis, unspecified"
+L23.9,L23.9,상세불명 원인의 알레르기 접촉피부염,"Allergic contact dermatitis, unspecified cause"
+L50.9,L50.9,상세불명의 두드러기,"Urticaria, unspecified"
+L02.9,L02.9,상세불명 부위의 피부농양,"Cutaneous abscess, unspecified site"
+B02.9,B02.9,합병증이 없는 대상포진,Zoster without complications (shingles)
+L30.9,L30.9,상세불명의 피부염,"Dermatitis, unspecified"
+H66.9,H66.9,상세불명의 화농성 중이염,"Suppurative otitis media, unspecified"
+H10.9,H10.9,상세불명의 결막염,"Conjunctivitis, unspecified"
+H81.1,H81.1,양성 발작성 어지럼증(이석증),Benign paroxysmal vertigo (BPPV)
+H91.9,H91.9,상세불명의 청력소실,"Hearing loss, unspecified"
+J11.1,J11.1,호흡기 증상을 동반한 인플루엔자,Influenza with respiratory manifestations
+U07.1,U07.1,코로나바이러스감염증-19,COVID-19
+B34.9,B34.9,상세불명의 바이러스 감염,"Viral infection, unspecified"
+A08.4,A08.4,상세불명의 바이러스 장관감염,"Viral intestinal infection, unspecified"
+R50.9,R50.9,상세불명의 발열,"Fever, unspecified"
+R51,R51,두통,Headache
+R11,R11,오심 및 구토,Nausea and vomiting
+R53,R53,권태 및 피로,Malaise and fatigue
+R05,R05,기침,Cough
+R07.4,R07.4,상세불명의 흉통,"Chest pain, unspecified"
+R06.0,R06.0,호흡곤란,Dyspnea
+F32.9,F32.9,상세불명의 우울에피소드,"Depressive episode, unspecified"
+F41.1,F41.1,범불안장애,Generalized anxiety disorder
+F43.2,F43.2,적응장애,Adjustment disorder
+F51.0,F51.0,비기질성 불면증,Nonorganic insomnia
+O80,O80,단태 자연분만,Single spontaneous delivery
+Z34,Z34,정상 임신의 감독,Supervision of normal pregnancy
+N92.0,N92.0,규칙적인 월경과다,Excessive and frequent menstruation with regular cycle
+N76.0,N76.0,급성 질염,Acute vaginitis
+O21.9,O21.9,상세불명의 임신 구토,"Vomiting of pregnancy, unspecified"
+Z96.6,Z96.6,관절 보형물의 존재,Presence of orthopedic joint implants
+Z98.8,Z98.8,기타 명시된 수술후 상태,Other specified postsurgical states
+Z09,Z09,치료 완료 후의 추적검사,Follow-up examination after completed treatment
+Z51.1,Z51.1,항암화학요법 치료 세션,Encounter for antineoplastic chemotherapy
+Z00.0,Z00.0,일반 건강검진,General adult medical examination
+R73.0,R73.0,비정상 포도당 내성검사,Abnormal glucose tolerance test
+Z71.3,Z71.3,식이상담 및 감독,Dietary counseling and surveillance
+R94.3,R94.3,심혈관 기능검사의 이상소견,Abnormal results of cardiovascular function studies
+J06.0,J06.0,급성 후두인두염,Acute laryngopharyngitis
+A38,A38,성홍열,Scarlet fever
+B08.4,B08.4,수족구병,"Hand, foot and mouth disease"
+P59.9,P59.9,상세불명의 신생아 황달,"Neonatal jaundice, unspecified"
+K02.9,K02.9,상세불명의 치아우식증,"Dental caries, unspecified"
+K04.7,K04.7,치근단 없이 동반된 치근단농양,Periapical abscess without sinus
+D36.9,D36.9,상세불명 부위의 양성 신생물,"Benign neoplasm, site unspecified"
+C80.9,C80.9,원발부위 불명의 악성 신생물,"Malignant neoplasm, unspecified primary site"
+D49.9,D49.9,상세불명 부위의 행동양식 불명의 신생물,"Neoplasm of unspecified behavior, site unspecified"
