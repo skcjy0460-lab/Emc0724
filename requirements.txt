@@ -1,5 +1,0 @@
-streamlit
-google-genai
-pandas
-xhtml2pdf
-reportlab
